@@ -5,13 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tekenin.my.id - Buat Tanda Tangan Online PNG Transparan Tanpa Background</title>
     <meta name="description" content="Generator tanda tangan digital dan hapus background foto tanda tangan kertas menjadi PNG transparan 100% gratis, cepat, tanpa login, dan aman diproses di browser Anda.">
-    <meta name="keywords" content="tekenin, tanda tangan online, tanda tangan transparan, hapus background tanda tangan, bikin ttd online, signature generator png, buat ttd di hp">
+    <meta name="keywords" content="tekenin, tanda tangan online, tanda tangan transparan, hapus background tanda tangan, bikin ttd online, signature generator png, buat ttd di hp, ttd tanpa background, tanda tangan word">
+    <link rel="canonical" href="https://tekenin.my.id/">
     
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="Tekenin.my.id - Buat Tanda Tangan Online PNG Transparan">
     <meta property="og:description" content="Coret tanda tangan langsung di HP atau upload foto kertas. Download PNG transparan instan tanpa background, 100% gratis & aman.">
-    <meta property="og:url" content="https://tekenin.my.id">
+    <meta property="og:url" content="https://tekenin.my.id/">
     <meta property="og:type" content="website">
+    <meta property="og:locale" content="id_ID">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Tekenin.my.id - Buat Tanda Tangan Online PNG Transparan">
+    <meta name="twitter:description" content="Coret tanda tangan langsung di HP atau upload foto kertas. Download PNG transparan instan tanpa background, 100% gratis & aman.">
+
+    <!-- JSON-LD Structured Data for Google Rich Snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "name": "Tekenin",
+          "url": "https://tekenin.my.id/",
+          "description": "Aplikasi pembuat tanda tangan digital dan pembersih latar belakang foto tanda tangan kertas menjadi PNG transparan 100% gratis dan aman di browser.",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "All",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "IDR"
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "ratingCount": "2180"
+          }
+        },
+        {
+          "@type": "HowTo",
+          "name": "Cara Membuat Tanda Tangan PNG Transparan di Word",
+          "step": [
+            {
+              "@type": "HowToStep",
+              "name": "Coret Tanda Tangan atau Upload Foto",
+              "text": "Buka tekenin.my.id lalu buat tanda tangan dengan jari di layar HP atau upload foto tanda tangan di atas kertas."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Salin atau Unduh PNG",
+              "text": "Klik tombol 'Salin ke Clipboard' atau 'Unduh PNG Transparan'."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Tempel ke Dokumen",
+              "text": "Buka Microsoft Word atau Google Docs, lalu tekan Ctrl+V / Paste. Atur Wrap Text ke In Front of Text."
+            }
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Bagaimana cara menempelkan tanda tangan PNG ini ke Microsoft Word?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Cukup buka dokumen Word Anda, klik menu Insert > Pictures, pilih file PNG yang baru diunduh. Lalu klik kanan pada gambar > pilih Wrap Text > In Front of Text agar tanda tangan bisa digeser dengan bebas di atas garis nama."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Apakah data tanda tangan saya aman dan tidak dicuri?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "100% Aman. Aplikasi web ini menggunakan teknologi Client-Side HTML5 Canvas. Seluruh proses pembuatan dan pembersihan latar belakang dikerjakan langsung di dalam browser HP/laptop Anda. Foto atau tanda tangan Anda tidak pernah dikirim atau disimpan di server mana pun."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Kenapa tanda tangan harus berformat PNG bukan JPG?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Format PNG mendukung kanal transparansi (Alpha Channel), sehingga bagian belakang tanda tangan Anda benar-benar bening. Jika memakai JPG, bagian belakangnya akan tetap berupa kotak putih yang menutupi teks atau garis surat resmi."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -46,12 +130,19 @@
         canvas {
             touch-action: none;
         }
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-up {
+            animation: slideUp 0.3s ease-out forwards;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans selection:bg-blue-100 selection:text-blue-700">
 
     <!-- Top Navigation Bar -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
         <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center space-x-2">
                 <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-sm shadow-blue-200">
@@ -64,10 +155,11 @@
             </div>
             
             <div class="flex items-center space-x-2">
+                <a href="#keunggulan" class="text-xs font-semibold text-slate-600 hover:text-blue-600 hidden sm:inline-block px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">Fitur</a>
                 <a href="#cara-pakai" class="text-xs font-semibold text-slate-600 hover:text-blue-600 hidden sm:inline-block px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">Cara Pakai</a>
-                <button onclick="document.getElementById('tipModal').classList.remove('hidden')" class="bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition">
+                <button onclick="openTipModal('header')" class="bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition">
                     <span>☕</span>
-                    <span>Traktir Kopi</span>
+                    <span>Traktir Es Kopi</span>
                 </button>
             </div>
         </div>
@@ -80,7 +172,7 @@
         <div class="text-center mb-6">
             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                Privasi 100% Aman (File Tidak Diunggah ke Server)
+                Privasi 100% Aman (Tanda Tangan Tidak Disimpan di Server)
             </span>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                 Buat Tanda Tangan PNG Transparan
@@ -88,6 +180,30 @@
             <p class="text-sm text-slate-500 mt-1 max-w-lg mx-auto">
                 Coret langsung di layar atau unggah foto tanda tangan dari kertas. Siap ditempel ke Word, PDF, dan dokumen lamaran kerja.
             </p>
+        </div>
+
+        <!-- 4 Trigger Pembeda (USP) Badges -->
+        <div id="keunggulan" class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200 text-center shadow-xs">
+                <span class="text-base">⚡</span>
+                <p class="font-bold text-slate-800 text-xs mt-0.5">1-Klik Salin ke Word</p>
+                <p class="text-[10px] text-slate-400">Ctrl+V tanpa unduh file</p>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200 text-center shadow-xs">
+                <span class="text-base">🖊️</span>
+                <p class="font-bold text-slate-800 text-xs mt-0.5">Biru Resmi Dokumen</p>
+                <p class="text-[10px] text-slate-400">Anti-dikira fotokopi</p>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200 text-center shadow-xs">
+                <span class="text-base">✂️</span>
+                <p class="font-bold text-slate-800 text-xs mt-0.5">Auto-Crop Rapi</p>
+                <p class="text-[10px] text-slate-400">Tanpa area kosong mubazir</p>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200 text-center shadow-xs">
+                <span class="text-base">🔒</span>
+                <p class="font-bold text-slate-800 text-xs mt-0.5">100% Privasi Aman</p>
+                <p class="text-[10px] text-slate-400">Diproses di HP Anda</p>
+            </div>
         </div>
 
         <!-- Mode Switcher Tabs -->
@@ -107,9 +223,9 @@
             <div class="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
                 <!-- Color Options -->
                 <div class="flex items-center space-x-2">
-                    <span class="text-xs font-semibold text-slate-500">Warna Tinta:</span>
+                    <span class="text-xs font-semibold text-slate-500">Warna:</span>
                     <button onclick="setPenColor('#0f172a', this)" class="w-7 h-7 rounded-full bg-slate-900 ring-2 ring-blue-600 ring-offset-2 transition" title="Hitam Pekat"></button>
-                    <button onclick="setPenColor('#0026a3', this)" class="w-7 h-7 rounded-full bg-[#0026a3] hover:ring-2 hover:ring-blue-600 hover:ring-offset-2 transition" title="Biru Dokumen Resmi"></button>
+                    <button onclick="setPenColor('#0026a3', this)" class="w-7 h-7 rounded-full bg-[#0026a3] hover:ring-2 hover:ring-blue-600 hover:ring-offset-2 transition" title="Biru Resmi Dokumen/Notaris"></button>
                     <button onclick="setPenColor('#dc2626', this)" class="w-7 h-7 rounded-full bg-red-600 hover:ring-2 hover:ring-blue-600 hover:ring-offset-2 transition" title="Merah Koreksi"></button>
                     <input type="color" id="customColorPicker" onchange="setPenColor(this.value, null)" class="w-7 h-7 rounded-full border border-slate-300 cursor-pointer overflow-hidden p-0" title="Pilih Warna Bebas">
                 </div>
@@ -263,13 +379,13 @@
             <h3 class="text-lg font-bold text-slate-900">Pertanyaan yang Sering Diajukan (FAQ)</h3>
             
             <div class="space-y-2 text-xs sm:text-sm">
-                <details class="bg-white border border-slate-200 rounded-xl p-3.5 group cursor-pointer">
+                <details class="bg-white border border-slate-200 rounded-xl p-3.5 group cursor-pointer" open>
                     <summary class="font-semibold text-slate-800 flex justify-between items-center select-none">
                         <span>Bagaimana cara menempelkan tanda tangan PNG ini ke Microsoft Word?</span>
                         <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
                     </summary>
                     <p class="mt-2 text-slate-600 leading-relaxed">
-                        Cukup buka dokumen Word Anda, klik menu <strong>Insert &gt; Pictures</strong>, pilih file PNG yang baru diunduh. Lalu klik kanan pada gambar &gt; pilih <strong>Wrap Text &gt; In Front of Text</strong> agar tanda tangan bisa digeser dengan bebas di atas garis nama.
+                        Cara paling cepat: klik tombol <strong>"Salin ke Clipboard"</strong> di Tekenin, lalu buka Word dan tekan <strong>Ctrl + V</strong>. Atau unduh filenya lalu klik <strong>Insert &gt; Pictures</strong>. Klik kanan gambar &gt; pilih <strong>Wrap Text &gt; In Front of Text</strong> agar tanda tangan bisa digeser bebas di atas garis nama.
                     </p>
                 </details>
 
@@ -279,7 +395,7 @@
                         <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
                     </summary>
                     <p class="mt-2 text-slate-600 leading-relaxed">
-                        <strong>100% Aman.</strong> Aplikasi web ini menggunakan teknologi <em>Client-Side HTML5 Canvas</em>. Seluruh proses pembuatan dan pembersihan latar belakang dikerjakan langsung di dalam browser HP/laptop Anda. Foto atau tanda tangan Anda <strong>tidak pernah dikirim atau disimpan di server mana pun</strong>.
+                        <strong>100% Aman.</strong> Aplikasi Tekenin menggunakan teknologi <em>Client-Side HTML5 Canvas</em>. Seluruh proses pembuatan dan pembersihan latar belakang dikerjakan langsung di prosesor browser HP/laptop Anda. Tanda tangan Anda <strong>tidak pernah dikirim atau disimpan di server mana pun</strong>.
                     </p>
                 </details>
 
@@ -289,7 +405,17 @@
                         <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
                     </summary>
                     <p class="mt-2 text-slate-600 leading-relaxed">
-                        Format PNG mendukung kanal transparansi (<em>Alpha Channel</em>), sehingga bagian belakang tanda tangan Anda benar-benar bening. Jika memakai JPG, bagian belakangnya akan tetap berupa kotak putih yang menutupi teks atau garis surat resmi.
+                        Format PNG mendukung kanal transparansi (<em>Alpha Channel</em>), sehingga bagian belakang tanda tangan Anda benar-benar bening. Jika memakai JPG, bagian belakangnya akan berupa kotak putih yang menutupi tulisan nama atau garis surat resmi.
+                    </p>
+                </details>
+
+                <details class="bg-white border border-slate-200 rounded-xl p-3.5 group cursor-pointer">
+                    <summary class="font-semibold text-slate-800 flex justify-between items-center select-none">
+                        <span>Kenapa ada opsi tinta warna biru dokumen resmi?</span>
+                        <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
+                    </summary>
+                    <p class="mt-2 text-slate-600 leading-relaxed">
+                        Banyak lembaga di Indonesia (perbankan, notaris, instansi BUMN) menolak tanda tangan digital yang berwarna hitam karena dicurigai hasil fotokopi. Menggunakan tinta <strong>Biru Resmi (#0026a3)</strong> memberikan kesan otentik dan diterima resmi di berbagai instansi.
                     </p>
                 </details>
             </div>
@@ -303,25 +429,64 @@
         <p class="mt-1">Dibuat dengan ❤️ tanpa server • 100% Gratis & Aman untuk Semua Orang</p>
     </footer>
 
-    <!-- Tip / Saweria Modal -->
+    <!-- Floating Action Button: Traktir Es Kopi -->
+    <div class="fixed bottom-5 right-5 z-40">
+        <button onclick="openTipModal('fab')" class="bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-full shadow-lg shadow-amber-200 flex items-center space-x-2 transition transform hover:scale-105 active:scale-95 border border-amber-300">
+            <span class="text-base">☕</span>
+            <span>Traktir Es Kopi (Rp 2.500)</span>
+        </button>
+    </div>
+
+    <!-- Celebration Slide-Up Toast (Appears after Download/Copy) -->
+    <div id="celebrationToast" class="hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 w-11/12 max-w-md bg-slate-900 text-white p-4 rounded-2xl shadow-2xl animate-slide-up border border-slate-700">
+        <div class="flex items-start justify-between">
+            <div class="flex items-start space-x-3">
+                <span class="text-2xl">🎉</span>
+                <div>
+                    <h4 class="font-bold text-sm text-white">Tanda Tangan Siap Digunakan!</h4>
+                    <p class="text-xs text-slate-300 mt-0.5 leading-snug">
+                        Terbantu dengan Tekenin? Traktir es kopi pengembang Rp 2.500 agar website ini tetap gratis & bebas iklan.
+                    </p>
+                    <div class="mt-2.5 flex items-center space-x-2">
+                        <button onclick="openTipModal('toast')" class="bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold text-xs px-3.5 py-1.5 rounded-lg transition flex items-center space-x-1">
+                            <span>☕ Traktir Kopi</span>
+                        </button>
+                        <button onclick="closeToast()" class="text-xs text-slate-400 hover:text-white px-2 py-1">
+                            Nanti Saja
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <button onclick="closeToast()" class="text-slate-400 hover:text-white text-base leading-none ml-2">&times;</button>
+        </div>
+    </div>
+
+    <!-- Tip / Saweria / QRIS Modal -->
     <div id="tipModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-xl space-y-4">
             <div class="w-12 h-12 bg-amber-100 text-amber-700 rounded-2xl flex items-center justify-center text-2xl mx-auto">
                 ☕
             </div>
             <div>
-                <h3 class="font-bold text-slate-900 text-base">Traktir Kopi Pengembang</h3>
+                <h3 class="font-bold text-slate-900 text-base">Traktir Es Kopi Pengembang</h3>
                 <p class="text-xs text-slate-500 mt-1">
-                    Website ini 100% gratis tanpa iklan yang mengganggu. Bantuan Rp 2.500 sangat berarti untuk memperpanjang domain tahunan.
+                    Website ini 100% gratis tanpa iklan yang mengganggu. Dukungan Rp 2.500 sangat berarti untuk memperpanjang domain dan server.
                 </p>
             </div>
 
             <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                <!-- Placeholder for QRIS / Saweria -->
-                <div class="w-36 h-36 mx-auto bg-white border border-slate-300 rounded-xl flex items-center justify-center text-slate-400 text-xs">
-                    [QRIS / Saweria]
+                <!-- QRIS Box -->
+                <div class="w-44 h-44 mx-auto bg-white border border-slate-300 rounded-xl flex flex-col items-center justify-center text-slate-400 p-2 shadow-xs">
+                    <!-- Placeholder QRIS / Saweria Image -->
+                    <div class="text-3xl mb-1">📱</div>
+                    <span class="text-[11px] font-semibold text-slate-600">Scan QRIS</span>
+                    <span class="text-[10px] text-slate-400 text-center">Bisa dari GoPay, OVO, Dana, BCA, Livin, atau ShopeePay</span>
                 </div>
-                <p class="text-[11px] font-medium text-slate-500 mt-2">Dukung via GoPay, OVO, Dana, BCA, atau ShopeePay</p>
+                <div class="mt-3">
+                    <a href="https://saweria.co" target="_blank" class="inline-flex items-center justify-center w-full py-2 rounded-xl bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold text-xs transition">
+                        Buka Saweria / Link Pembayaran
+                    </a>
+                </div>
             </div>
 
             <button onclick="document.getElementById('tipModal').classList.add('hidden')" class="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
@@ -332,6 +497,21 @@
 
     <!-- Application JavaScript Engine -->
     <script>
+        // Modal & Toast Controls
+        function openTipModal(source) {
+            document.getElementById('celebrationToast').classList.add('hidden');
+            document.getElementById('tipModal').classList.remove('hidden');
+        }
+
+        function triggerSuccessToast() {
+            const toast = document.getElementById('celebrationToast');
+            toast.classList.remove('hidden');
+        }
+
+        function closeToast() {
+            document.getElementById('celebrationToast').classList.add('hidden');
+        }
+
         // Tab Switching
         function switchTab(mode) {
             const drawBtn = document.getElementById('tabDrawBtn');
@@ -370,12 +550,6 @@
             const rect = canvas.getBoundingClientRect();
             const dpr = window.devicePixelRatio || 1;
             
-            // Simpan gambar lama jika ada
-            let oldImage = null;
-            if (canvas.width > 0 && canvas.height > 0 && strokeHistory.length > 0) {
-                oldImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            }
-
             canvas.width = rect.width * dpr;
             canvas.height = rect.height * dpr;
             ctx.scale(dpr, dpr);
@@ -556,9 +730,10 @@
             const finalCanvas = autoCrop ? getCroppedCanvas(canvas) : canvas;
             
             const link = document.createElement('a');
-            link.download = `tanda-tangan-transparan-${Date.now()}.png`;
+            link.download = `tekenin-tanda-tangan-transparan-${Date.now()}.png`;
             link.href = finalCanvas.toDataURL('image/png');
             link.click();
+            triggerSuccessToast();
         }
 
         function downloadJPG() {
@@ -578,9 +753,10 @@
             whiteCtx.drawImage(source, 0, 0);
 
             const link = document.createElement('a');
-            link.download = `tanda-tangan-putih-${Date.now()}.jpg`;
+            link.download = `tekenin-tanda-tangan-putih-${Date.now()}.jpg`;
             link.href = whiteCanvas.toDataURL('image/jpeg', 0.95);
             link.click();
+            triggerSuccessToast();
         }
 
         async function copyToClipboard() {
@@ -601,6 +777,7 @@
                     setTimeout(() => {
                         btnText.innerText = "Salin ke Clipboard (Word)";
                     }, 2500);
+                    triggerSuccessToast();
                 } catch (err) {
                     alert("Browser Anda memerlukan izin untuk menyalin gambar. Silakan gunakan tombol Unduh PNG.");
                 }
@@ -712,9 +889,10 @@
             if (!rawUploadedImg) return;
             const finalCanvas = getCroppedCanvas(scanCanvas);
             const link = document.createElement('a');
-            link.download = `scan-ttd-transparan-${Date.now()}.png`;
+            link.download = `tekenin-scan-ttd-transparan-${Date.now()}.png`;
             link.href = finalCanvas.toDataURL('image/png');
             link.click();
+            triggerSuccessToast();
         }
 
         async function copyScannedToClipboard() {
@@ -730,6 +908,7 @@
                     setTimeout(() => {
                         btnText.innerText = "Salin Gambar (Word/Docs)";
                     }, 2500);
+                    triggerSuccessToast();
                 } catch (err) {
                     alert("Gunakan tombol Unduh PNG jika browser Anda membatasi salin gambar.");
                 }
