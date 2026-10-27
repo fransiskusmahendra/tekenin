@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tekenin.my.id - Buat Tanda Tangan Online PNG Transparan Tanpa Background</title>
+    <meta name="description" content="Generator tanda tangan digital dan hapus background foto tanda tangan kertas menjadi PNG transparan 100% gratis, cepat, tanpa login, dan aman diproses di browser Anda.">
+    <meta name="keywords" content="tekenin, tanda tangan online, tanda tangan transparan, hapus background tanda tangan, bikin ttd online, signature generator png, buat ttd di hp">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Tekenin.my.id - Buat Tanda Tangan Online PNG Transparan">
+    <meta property="og:description" content="Coret tanda tangan langsung di HP atau upload foto kertas. Download PNG transparan instan tanpa background, 100% gratis & aman.">
+    <meta property="og:url" content="https://tekenin.my.id">
+    <meta property="og:type" content="website">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        primaryHover: '#1d4ed8',
+                        inkBlack: '#0f172a',
+                        inkBlue: '#0026a3',
+                        inkRed: '#dc2626'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Checkerboard pattern for transparency indication */
+        .transparency-bg {
+            background-color: #ffffff;
+            background-image: 
+                linear-gradient(45deg, #f1f5f9 25%, transparent 25%), 
+                linear-gradient(-45deg, #f1f5f9 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #f1f5f9 75%), 
+                linear-gradient(-45deg, transparent 75%, #f1f5f9 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+        canvas {
+            touch-action: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans selection:bg-blue-100 selection:text-blue-700">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-sm shadow-blue-200">
+                    ✍️
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-slate-900 text-lg leading-tight tracking-tight">Tekenin<span class="text-blue-600">.my.id</span></h1>
+                    <p class="text-[11px] text-slate-400 font-medium">PNG Transparan • 100% Client-Side • Bebas Login</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+                <a href="#cara-pakai" class="text-xs font-semibold text-slate-600 hover:text-blue-600 hidden sm:inline-block px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">Cara Pakai</a>
+                <button onclick="document.getElementById('tipModal').classList.remove('hidden')" class="bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition">
+                    <span>☕</span>
+                    <span>Traktir Kopi</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-6 sm:py-8">
+        
+        <!-- Hero Header -->
+        <div class="text-center mb-6">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Privasi 100% Aman (File Tidak Diunggah ke Server)
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                Buat Tanda Tangan PNG Transparan
+            </h2>
+            <p class="text-sm text-slate-500 mt-1 max-w-lg mx-auto">
+                Coret langsung di layar atau unggah foto tanda tangan dari kertas. Siap ditempel ke Word, PDF, dan dokumen lamaran kerja.
+            </p>
+        </div>
+
+        <!-- Mode Switcher Tabs -->
+        <div class="flex p-1 bg-slate-200/80 rounded-2xl max-w-md mx-auto mb-6 shadow-inner">
+            <button id="tabDrawBtn" onclick="switchTab('draw')" class="flex-1 py-2.5 px-4 text-xs sm:text-sm font-bold rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 bg-white text-blue-600 shadow-sm">
+                <span>✍️ Gambar di Layar</span>
+            </button>
+            <button id="tabScanBtn" onclick="switchTab('scan')" class="flex-1 py-2.5 px-4 text-xs sm:text-sm font-semibold rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 text-slate-600 hover:text-slate-900">
+                <span>📸 Scan Foto Kertas</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: GAMBAR DI LAYAR -->
+        <div id="drawSection" class="space-y-4">
+            
+            <!-- Controls Toolbar -->
+            <div class="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+                <!-- Color Options -->
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-semibold text-slate-500">Warna Tinta:</span>
+                    <button onclick="setPenColor('#0f172a', this)" class="w-7 h-7 rounded-full bg-slate-900 ring-2 ring-blue-600 ring-offset-2 transition" title="Hitam Pekat"></button>
+                    <button onclick="setPenColor('#0026a3', this)" class="w-7 h-7 rounded-full bg-[#0026a3] hover:ring-2 hover:ring-blue-600 hover:ring-offset-2 transition" title="Biru Dokumen Resmi"></button>
+                    <button onclick="setPenColor('#dc2626', this)" class="w-7 h-7 rounded-full bg-red-600 hover:ring-2 hover:ring-blue-600 hover:ring-offset-2 transition" title="Merah Koreksi"></button>
+                    <input type="color" id="customColorPicker" onchange="setPenColor(this.value, null)" class="w-7 h-7 rounded-full border border-slate-300 cursor-pointer overflow-hidden p-0" title="Pilih Warna Bebas">
+                </div>
+
+                <!-- Stroke Width -->
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-semibold text-slate-500">Tebal:</span>
+                    <select id="penWidthSelect" onchange="setPenWidth(this.value)" class="text-xs font-medium bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="1.5">Halus (1.5px)</option>
+                        <option value="2.8" selected>Standar Pulpen (2.8px)</option>
+                        <option value="4.5">Tebal / Spidol (4.5px)</option>
+                    </select>
+                </div>
+
+                <!-- Canvas Actions (Undo/Clear) -->
+                <div class="flex items-center space-x-1.5 ml-auto">
+                    <button onclick="undoStroke()" class="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg flex items-center space-x-1 transition" title="Batalkan Goresan Terakhir">
+                        <span>↩️ Undo</span>
+                    </button>
+                    <button onclick="clearCanvas()" class="px-3 py-1.5 text-xs font-semibold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 rounded-lg flex items-center space-x-1 transition" title="Bersihkan Layar">
+                        <span>🗑️ Bersihkan</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Drawing Area -->
+            <div class="relative bg-white rounded-3xl border-2 border-dashed border-slate-300 shadow-sm overflow-hidden transparency-bg">
+                <canvas id="signatureCanvas" class="w-full h-64 sm:h-80 cursor-crosshair block"></canvas>
+                
+                <!-- Placeholder helper text when canvas is empty -->
+                <div id="canvasPlaceholder" class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-slate-400 select-none">
+                    <span class="text-3xl mb-1">✍️</span>
+                    <p class="text-xs sm:text-sm font-medium">Goreskan tanda tangan atau paraf Anda di sini</p>
+                    <p class="text-[11px] text-slate-400">Gunakan jari di layar sentuh HP atau mouse di laptop</p>
+                </div>
+            </div>
+
+            <!-- Download & Export Bar -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                <div class="flex items-center justify-between text-xs text-slate-500">
+                    <label class="flex items-center space-x-2 cursor-pointer select-none">
+                        <input type="checkbox" id="autoCropToggle" checked class="rounded text-blue-600 focus:ring-blue-500 h-4 w-4">
+                        <span class="font-medium text-slate-700">Pangkas area kosong otomatis (Auto-Crop)</span>
+                    </label>
+                    <span class="text-[11px] text-slate-400 hidden sm:inline">Format: PNG 32-bit Transparent</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    <button onclick="downloadPNG()" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-200 flex items-center justify-center space-x-2 transition transform active:scale-95">
+                        <span>📥</span>
+                        <span>Unduh PNG Transparan</span>
+                    </button>
+                    <button onclick="copyToClipboard()" class="w-full py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-sm shadow flex items-center justify-center space-x-2 transition transform active:scale-95">
+                        <span>📋</span>
+                        <span id="copyBtnText">Salin ke Clipboard (Word)</span>
+                    </button>
+                    <button onclick="downloadJPG()" class="w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm flex items-center justify-center space-x-2 transition">
+                        <span>🖼️</span>
+                        <span>Unduh JPG Putih</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TAB 2: SCAN FOTO KERTAS -->
+        <div id="scanSection" class="space-y-4 hidden">
+            
+            <!-- Upload Box -->
+            <div id="uploadDropzone" class="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-3xl p-6 sm:p-8 text-center bg-white cursor-pointer transition shadow-sm group">
+                <input type="file" id="photoInput" accept="image/*" class="hidden" onchange="handlePhotoUpload(event)">
+                <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl group-hover:scale-110 transition">
+                    📷
+                </div>
+                <h3 class="font-bold text-slate-800 text-sm sm:text-base mb-1">Pilih atau Ambil Foto Tanda Tangan di Kertas</h3>
+                <p class="text-xs text-slate-500 max-w-sm mx-auto mb-3">
+                    Tanda tangan di selembar kertas putih, lalu foto dengan HP. Sistem otomatis membersihkan background kertas!
+                </p>
+                <button type="button" onclick="document.getElementById('photoInput').click()" class="py-2 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-200 transition">
+                    Pilih Foto dari Galeri / Kamera
+                </button>
+            </div>
+
+            <!-- Image Processing Controls (Hidden until photo is uploaded) -->
+            <div id="scanProcessArea" class="hidden space-y-4">
+                
+                <!-- Filter Sliders -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700">Sensitivitas Hapus Kertas (Threshold):</span>
+                        <span id="thresholdVal" class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">65%</span>
+                    </div>
+                    <input type="range" id="thresholdSlider" min="20" max="95" value="65" oninput="applyThreshold()" class="w-full accent-blue-600 cursor-pointer">
+
+                    <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs font-medium text-slate-500">Ubah Tinta Menjadi:</span>
+                            <button onclick="setScannedInkColor('original')" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700">Warna Asli</button>
+                            <button onclick="setScannedInkColor('black')" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-900 text-white">Hitam Solid</button>
+                            <button onclick="setScannedInkColor('blue')" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-[#0026a3] text-white">Biru Resmi</button>
+                        </div>
+                        <button onclick="resetPhotoUpload()" class="text-xs font-medium text-red-600 hover:underline">Ganti Foto Lain</button>
+                    </div>
+                </div>
+
+                <!-- Processed Preview Canvas -->
+                <div class="relative bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden transparency-bg p-2 flex items-center justify-center min-h-[240px]">
+                    <canvas id="scanCanvas" class="max-w-full max-h-[350px] object-contain rounded-xl"></canvas>
+                </div>
+
+                <!-- Download Scanned PNG -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button onclick="downloadScannedPNG()" class="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-200 flex items-center justify-center space-x-2 transition">
+                        <span>📥</span>
+                        <span>Unduh Hasil PNG Transparan</span>
+                    </button>
+                    <button onclick="copyScannedToClipboard()" class="w-full py-3.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-sm shadow flex items-center justify-center space-x-2 transition">
+                        <span>📋</span>
+                        <span id="copyScanBtnText">Salin Gambar (Word/Docs)</span>
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Document Preview Simulation -->
+        <div class="mt-8 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
+                <span>📄</span>
+                <span>Simulasi Tanda Tangan di Surat Resmi</span>
+            </h3>
+            
+            <div class="bg-amber-50/50 border border-amber-100 rounded-2xl p-4 sm:p-5 text-xs text-slate-600 space-y-2 leading-relaxed">
+                <p class="font-serif">"...Demikian surat pernyataan ini dibuat dengan sebenar-benarnya untuk dipergunakan sebagaimana mestinya."</p>
+                
+                <div class="pt-4 flex justify-end">
+                    <div class="w-48 text-center">
+                        <p class="font-medium text-slate-700">Hormat saya,</p>
+                        <div class="h-16 flex items-center justify-center my-1">
+                            <img id="liveDocPreview" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='40'><text x='10' y='25' fill='%2394a3b8' font-size='12'>[Tanda Tangan]</text></svg>" class="max-h-16 max-w-full object-contain">
+                        </div>
+                        <p class="font-bold text-slate-800 border-t border-slate-300 pt-1">Nama Lengkap Pemohon</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ & SEO Content Section -->
+        <div id="cara-pakai" class="mt-10 space-y-4">
+            <h3 class="text-lg font-bold text-slate-900">Pertanyaan yang Sering Diajukan (FAQ)</h3>
+            
+            <div class="space-y-2 text-xs sm:text-sm">
+                <details class="bg-white border border-slate-200 rounded-xl p-3.5 group cursor-pointer">
+                    <summary class="font-semibold text-slate-800 flex justify-between items-center select-none">
+                        <span>Bagaimana cara menempelkan tanda tangan PNG ini ke Microsoft Word?</span>
+                        <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
+                    </summary>
+                    <p class="mt-2 text-slate-600 leading-relaxed">
+                        Cukup buka dokumen Word Anda, klik menu <strong>Insert &gt; Pictures</strong>, pilih file PNG yang baru diunduh. Lalu klik kanan pada gambar &gt; pilih <strong>Wrap Text &gt; In Front of Text</strong> agar tanda tangan bisa digeser dengan bebas di atas garis nama.
+                    </p>
+                </details>
+
+                <details class="bg-white border border-slate-200 rounded-xl p-3.5 group cursor-pointer">
+                    <summary class="font-semibold text-slate-800 flex justify-between items-center select-none">
+                        <span>Apakah data tanda tangan saya aman dan tidak dicuri?</span>
+                        <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
+                    </summary>
+                    <p class="mt-2 text-slate-600 leading-relaxed">
+                        <strong>100% Aman.</strong> Aplikasi web ini menggunakan teknologi <em>Client-Side HTML5 Canvas</em>. Seluruh proses pembuatan dan pembersihan latar belakang dikerjakan langsung di dalam browser HP/laptop Anda. Foto atau tanda tangan Anda <strong>tidak pernah dikirim atau disimpan di server mana pun</strong>.
+                    </p>
+                </details>
+
+                <details class="bg-white border border-slate-200 rounded-xl p-3.5 group cursor-pointer">
+                    <summary class="font-semibold text-slate-800 flex justify-between items-center select-none">
+                        <span>Kenapa tanda tangan harus berformat PNG bukan JPG?</span>
+                        <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
+                    </summary>
+                    <p class="mt-2 text-slate-600 leading-relaxed">
+                        Format PNG mendukung kanal transparansi (<em>Alpha Channel</em>), sehingga bagian belakang tanda tangan Anda benar-benar bening. Jika memakai JPG, bagian belakangnya akan tetap berupa kotak putih yang menutupi teks atau garis surat resmi.
+                    </p>
+                </details>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
+        <p class="font-semibold text-slate-700">Tekenin.my.id - Pembuat Tanda Tangan Digital Transparan Indonesia</p>
+        <p class="mt-1">Dibuat dengan ❤️ tanpa server • 100% Gratis & Aman untuk Semua Orang</p>
+    </footer>
+
+    <!-- Tip / Saweria Modal -->
+    <div id="tipModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-xl space-y-4">
+            <div class="w-12 h-12 bg-amber-100 text-amber-700 rounded-2xl flex items-center justify-center text-2xl mx-auto">
+                ☕
+            </div>
+            <div>
+                <h3 class="font-bold text-slate-900 text-base">Traktir Kopi Pengembang</h3>
+                <p class="text-xs text-slate-500 mt-1">
+                    Website ini 100% gratis tanpa iklan yang mengganggu. Bantuan Rp 2.500 sangat berarti untuk memperpanjang domain tahunan.
+                </p>
+            </div>
+
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <!-- Placeholder for QRIS / Saweria -->
+                <div class="w-36 h-36 mx-auto bg-white border border-slate-300 rounded-xl flex items-center justify-center text-slate-400 text-xs">
+                    [QRIS / Saweria]
+                </div>
+                <p class="text-[11px] font-medium text-slate-500 mt-2">Dukung via GoPay, OVO, Dana, BCA, atau ShopeePay</p>
+            </div>
+
+            <button onclick="document.getElementById('tipModal').classList.add('hidden')" class="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <!-- Application JavaScript Engine -->
+    <script>
+        // Tab Switching
+        function switchTab(mode) {
+            const drawBtn = document.getElementById('tabDrawBtn');
+            const scanBtn = document.getElementById('tabScanBtn');
+            const drawSec = document.getElementById('drawSection');
+            const scanSec = document.getElementById('scanSection');
+
+            if (mode === 'draw') {
+                drawBtn.className = "flex-1 py-2.5 px-4 text-xs sm:text-sm font-bold rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 bg-white text-blue-600 shadow-sm";
+                scanBtn.className = "flex-1 py-2.5 px-4 text-xs sm:text-sm font-semibold rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 text-slate-600 hover:text-slate-900";
+                drawSec.classList.remove('hidden');
+                scanSec.classList.add('hidden');
+            } else {
+                scanBtn.className = "flex-1 py-2.5 px-4 text-xs sm:text-sm font-bold rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 bg-white text-blue-600 shadow-sm";
+                drawBtn.className = "flex-1 py-2.5 px-4 text-xs sm:text-sm font-semibold rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 text-slate-600 hover:text-slate-900";
+                scanSec.classList.remove('hidden');
+                drawSec.classList.add('hidden');
+            }
+        }
+
+        // ==========================================
+        // CANVAS DRAWING ENGINE (High-DPI Retina Ready)
+        // ==========================================
+        const canvas = document.getElementById('signatureCanvas');
+        const ctx = canvas.getContext('2d');
+        const placeholder = document.getElementById('canvasPlaceholder');
+        const liveDocPreview = document.getElementById('liveDocPreview');
+
+        let isDrawing = false;
+        let penColor = '#0f172a';
+        let penWidth = 2.8;
+        let strokeHistory = [];
+        let currentStroke = [];
+
+        function initCanvasSize() {
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            
+            // Simpan gambar lama jika ada
+            let oldImage = null;
+            if (canvas.width > 0 && canvas.height > 0 && strokeHistory.length > 0) {
+                oldImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            }
+
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            redrawStrokes();
+        }
+
+        window.addEventListener('resize', initCanvasSize);
+        window.addEventListener('DOMContentLoaded', () => {
+            initCanvasSize();
+        });
+
+        function getPointerPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function startDrawing(e) {
+            e.preventDefault();
+            isDrawing = true;
+            placeholder.style.display = 'none';
+            const pos = getPointerPos(e);
+            currentStroke = [{ x: pos.x, y: pos.y, color: penColor, width: penWidth }];
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const pos = getPointerPos(e);
+            const prev = currentStroke[currentStroke.length - 1];
+
+            ctx.strokeStyle = penColor;
+            ctx.lineWidth = penWidth;
+            ctx.beginPath();
+            ctx.moveTo(prev.x, prev.y);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+
+            currentStroke.push({ x: pos.x, y: pos.y, color: penColor, width: penWidth });
+        }
+
+        function stopDrawing(e) {
+            if (!isDrawing) return;
+            isDrawing = false;
+            if (currentStroke.length > 1) {
+                strokeHistory.push(currentStroke);
+            }
+            currentStroke = [];
+            updateLivePreview();
+        }
+
+        // Pointer / Touch Events
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        window.addEventListener('mouseup', stopDrawing);
+
+        canvas.addEventListener('touchstart', startDrawing, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
+        window.addEventListener('touchend', stopDrawing);
+
+        function setPenColor(color, btnEl) {
+            penColor = color;
+            if (btnEl) {
+                document.querySelectorAll('.ring-blue-600').forEach(el => {
+                    el.classList.remove('ring-2', 'ring-blue-600', 'ring-offset-2');
+                });
+                btnEl.classList.add('ring-2', 'ring-blue-600', 'ring-offset-2');
+            }
+        }
+
+        function setPenWidth(val) {
+            penWidth = parseFloat(val);
+        }
+
+        function clearCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            ctx.clearRect(0, 0, rect.width, rect.height);
+            strokeHistory = [];
+            placeholder.style.display = 'flex';
+            liveDocPreview.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='40'><text x='10' y='25' fill='%2394a3b8' font-size='12'>[Tanda Tangan]</text></svg>";
+        }
+
+        function undoStroke() {
+            if (strokeHistory.length === 0) return;
+            strokeHistory.pop();
+            redrawStrokes();
+            if (strokeHistory.length === 0) {
+                placeholder.style.display = 'flex';
+            }
+            updateLivePreview();
+        }
+
+        function redrawStrokes() {
+            const rect = canvas.getBoundingClientRect();
+            ctx.clearRect(0, 0, rect.width, rect.height);
+
+            for (const stroke of strokeHistory) {
+                if (stroke.length < 2) continue;
+                ctx.strokeStyle = stroke[0].color;
+                ctx.lineWidth = stroke[0].width;
+                ctx.beginPath();
+                ctx.moveTo(stroke[0].x, stroke[0].y);
+                for (let i = 1; i < stroke.length; i++) {
+                    ctx.lineTo(stroke[i].x, stroke[i].y);
+                }
+                ctx.stroke();
+            }
+        }
+
+        function updateLivePreview() {
+            if (strokeHistory.length === 0) return;
+            const cropped = getCroppedCanvas(canvas, false);
+            liveDocPreview.src = cropped.toDataURL('image/png');
+        }
+
+        // ==========================================
+        // AUTO-CROP HELPER (Trim Bounding Box)
+        // ==========================================
+        function getCroppedCanvas(srcCanvas, pad = true) {
+            const tempCtx = srcCanvas.getContext('2d');
+            const w = srcCanvas.width;
+            const h = srcCanvas.height;
+            const imgData = tempCtx.getImageData(0, 0, w, h);
+            const data = imgData.data;
+
+            let minX = w, minY = h, maxX = 0, maxY = 0;
+            let hasPixels = false;
+
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    const alpha = data[((y * w + x) * 4) + 3];
+                    if (alpha > 10) {
+                        hasPixels = true;
+                        if (x < minX) minX = x;
+                        if (x > maxX) maxX = x;
+                        if (y < minY) minY = y;
+                        if (y > maxY) maxY = y;
+                    }
+                }
+            }
+
+            if (!hasPixels) return srcCanvas;
+
+            const padding = pad ? 20 : 5;
+            minX = Math.max(0, minX - padding);
+            minY = Math.max(0, minY - padding);
+            maxX = Math.min(w, maxX + padding);
+            maxY = Math.min(h, maxY + padding);
+
+            const cropW = maxX - minX;
+            const cropH = maxY - minY;
+
+            const cropCanvas = document.createElement('canvas');
+            cropCanvas.width = cropW;
+            cropCanvas.height = cropH;
+            const cropCtx = cropCanvas.getContext('2d');
+            cropCtx.drawImage(srcCanvas, minX, minY, cropW, cropH, 0, 0, cropW, cropH);
+
+            return cropCanvas;
+        }
+
+        // ==========================================
+        // DOWNLOAD & EXPORT (Draw Section)
+        // ==========================================
+        function downloadPNG() {
+            if (strokeHistory.length === 0) {
+                alert("Silakan buat tanda tangan terlebih dahulu di layar!");
+                return;
+            }
+            const autoCrop = document.getElementById('autoCropToggle').checked;
+            const finalCanvas = autoCrop ? getCroppedCanvas(canvas) : canvas;
+            
+            const link = document.createElement('a');
+            link.download = `tanda-tangan-transparan-${Date.now()}.png`;
+            link.href = finalCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadJPG() {
+            if (strokeHistory.length === 0) {
+                alert("Silakan buat tanda tangan terlebih dahulu di layar!");
+                return;
+            }
+            const autoCrop = document.getElementById('autoCropToggle').checked;
+            const source = autoCrop ? getCroppedCanvas(canvas) : canvas;
+
+            const whiteCanvas = document.createElement('canvas');
+            whiteCanvas.width = source.width;
+            whiteCanvas.height = source.height;
+            const whiteCtx = whiteCanvas.getContext('2d');
+            whiteCtx.fillStyle = '#ffffff';
+            whiteCtx.fillRect(0, 0, whiteCanvas.width, whiteCanvas.height);
+            whiteCtx.drawImage(source, 0, 0);
+
+            const link = document.createElement('a');
+            link.download = `tanda-tangan-putih-${Date.now()}.jpg`;
+            link.href = whiteCanvas.toDataURL('image/jpeg', 0.95);
+            link.click();
+        }
+
+        async function copyToClipboard() {
+            if (strokeHistory.length === 0) {
+                alert("Silakan buat tanda tangan terlebih dahulu di layar!");
+                return;
+            }
+            const autoCrop = document.getElementById('autoCropToggle').checked;
+            const finalCanvas = autoCrop ? getCroppedCanvas(canvas) : canvas;
+
+            finalCanvas.toBlob(async (blob) => {
+                try {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({ 'image/png': blob })
+                    ]);
+                    const btnText = document.getElementById('copyBtnText');
+                    btnText.innerText = "✅ Tersalin! Tempel di Word";
+                    setTimeout(() => {
+                        btnText.innerText = "Salin ke Clipboard (Word)";
+                    }, 2500);
+                } catch (err) {
+                    alert("Browser Anda memerlukan izin untuk menyalin gambar. Silakan gunakan tombol Unduh PNG.");
+                }
+            });
+        }
+
+        // ==========================================
+        // TAB 2: PHOTO SCAN & BACKGROUND REMOVER ENGINE
+        // ==========================================
+        let rawUploadedImg = null;
+        const scanCanvas = document.getElementById('scanCanvas');
+        const scanCtx = scanCanvas.getContext('2d');
+        let currentInkMode = 'original';
+
+        function handlePhotoUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    rawUploadedImg = img;
+                    document.getElementById('uploadDropzone').classList.add('hidden');
+                    document.getElementById('scanProcessArea').classList.remove('hidden');
+                    applyThreshold();
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetPhotoUpload() {
+            document.getElementById('photoInput').value = '';
+            rawUploadedImg = null;
+            document.getElementById('uploadDropzone').classList.remove('hidden');
+            document.getElementById('scanProcessArea').classList.add('hidden');
+        }
+
+        function setScannedInkColor(mode) {
+            currentInkMode = mode;
+            applyThreshold();
+        }
+
+        function applyThreshold() {
+            if (!rawUploadedImg) return;
+            const thresholdPercent = parseInt(document.getElementById('thresholdSlider').value);
+            document.getElementById('thresholdVal').innerText = thresholdPercent + '%';
+
+            // Limit max width for processing performance
+            const maxDimension = 1400;
+            let w = rawUploadedImg.width;
+            let h = rawUploadedImg.height;
+
+            if (w > maxDimension || h > maxDimension) {
+                if (w > h) {
+                    h = Math.round((h * maxDimension) / w);
+                    w = maxDimension;
+                } else {
+                    w = Math.round((w * maxDimension) / h);
+                    h = maxDimension;
+                }
+            }
+
+            scanCanvas.width = w;
+            scanCanvas.height = h;
+
+            scanCtx.drawImage(rawUploadedImg, 0, 0, w, h);
+            const imgData = scanCtx.getImageData(0, 0, w, h);
+            const data = imgData.data;
+
+            // Threshold in 0-255 range
+            const threshold = (thresholdPercent / 100) * 255;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+
+                // Hitung brightness / luminance
+                const brightness = (0.299 * r + 0.587 * g + 0.114 * b);
+
+                if (brightness > threshold) {
+                    // Jadikan transparan sepenuhnya (Kertas Putih)
+                    data[i + 3] = 0;
+                } else {
+                    // Bagian Tinta Tanda Tangan:
+                    // Smoothing alpha gradien di tepi garis
+                    const alphaRatio = Math.max(0, Math.min(1, (threshold - brightness) / (threshold * 0.4)));
+                    data[i + 3] = Math.round(alphaRatio * 255);
+
+                    if (currentInkMode === 'black') {
+                        data[i] = 15;
+                        data[i + 1] = 23;
+                        data[i + 2] = 42;
+                    } else if (currentInkMode === 'blue') {
+                        data[i] = 0;
+                        data[i + 1] = 38;
+                        data[i + 2] = 163;
+                    }
+                }
+            }
+
+            scanCtx.putImageData(imgData, 0, 0);
+            liveDocPreview.src = getCroppedCanvas(scanCanvas, false).toDataURL('image/png');
+        }
+
+        function downloadScannedPNG() {
+            if (!rawUploadedImg) return;
+            const finalCanvas = getCroppedCanvas(scanCanvas);
+            const link = document.createElement('a');
+            link.download = `scan-ttd-transparan-${Date.now()}.png`;
+            link.href = finalCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        async function copyScannedToClipboard() {
+            if (!rawUploadedImg) return;
+            const finalCanvas = getCroppedCanvas(scanCanvas);
+            finalCanvas.toBlob(async (blob) => {
+                try {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({ 'image/png': blob })
+                    ]);
+                    const btnText = document.getElementById('copyScanBtnText');
+                    btnText.innerText = "✅ Tersalin! Tempel di Word";
+                    setTimeout(() => {
+                        btnText.innerText = "Salin Gambar (Word/Docs)";
+                    }, 2500);
+                } catch (err) {
+                    alert("Gunakan tombol Unduh PNG jika browser Anda membatasi salin gambar.");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
