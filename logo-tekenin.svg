@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none">
+  <defs>
+    <linearGradient id="tekeninGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="50%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient>
+    <filter id="tekeninShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#4F46E5" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <!-- Background Shape -->
+  <rect width="48" height="48" rx="14" fill="url(#tekeninGrad)" filter="url(#tekeninShadow)"/>
+  <!-- Signature Swirl & Pen Nib Silhouette in White -->
+  <!-- Stylized 'T' with flowing cursive baseline -->
+  <path d="M12 16 H36 M24 16 V27 C24 31 22 34 17 34 C14 34 13 32 14 30 C15 27 18 28 20 28 C26 28 29 23 35 32" 
+        stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Sparkle dot -->
+  <circle cx="35" cy="15" r="2.2" fill="#38BDF8"/>
+</svg>
